@@ -71,6 +71,37 @@
             </div>
           </div>
 
+          <div class="fun-stage" aria-label="Practice celebration stage">
+            <div class="stage-top">
+              <div>
+                <p class="eyebrow">Star Stage</p>
+                <h2 id="questMessage">Warm up your magic fingers</h2>
+              </div>
+              <div class="sound-controls">
+                <button id="soundToggle" class="icon-button sound-on" type="button" title="Toggle sound" aria-label="Toggle sound">
+                  <svg id="soundIcon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 10v4h4l5 5V5l-5 5H4zM17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11" />
+                  </svg>
+                </button>
+                <button id="playTune" class="text-button tune-button" type="button">Play Tune</button>
+              </div>
+            </div>
+            <div class="stage-lights" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div id="miniKeys" class="mini-keys" aria-label="Mini piano notes">
+              <button type="button" data-note="261.63">C</button>
+              <button type="button" data-note="293.66">D</button>
+              <button type="button" data-note="329.63">E</button>
+              <button type="button" data-note="392">G</button>
+              <button type="button" data-note="523.25">C</button>
+            </div>
+          </div>
+
           <form id="practiceForm" class="practice-form">
             <div class="form-grid">
               <label>
@@ -151,6 +182,16 @@
             </div>
             <div id="timerDisplay" class="timer-display">10:00</div>
             <input id="timerMinutes" type="range" min="3" max="30" value="10" />
+          </article>
+
+          <article class="quest-panel">
+            <h2>Daily Quest</h2>
+            <div id="dailyQuest" class="daily-quest">Play any piece for 10 minutes.</div>
+            <div class="quest-stars" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </article>
 
           <article class="badges-panel">

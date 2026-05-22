@@ -22,6 +22,7 @@ const initialState = {
 
 const storageKey = "pianoQuestProgressV1";
 const syncConfigKey = "pianoQuestGithubSyncV1";
+const soundConfigKey = "pianoQuestSoundV1";
 const githubSync = {
   owner: "fadicog",
   repo: "piano",
@@ -30,7 +31,9 @@ const githubSync = {
 };
 let state = loadState();
 let syncConfig = loadSyncConfig();
+let soundOn = loadSoundSetting();
 let syncInFlight = false;
+let audioContext = null;
 let timer = {
   running: false,
   remaining: 10 * 60,
@@ -68,6 +71,13 @@ const els = {
   connectSync: document.querySelector("#connectSync"),
   disconnectSync: document.querySelector("#disconnectSync"),
   syncStatus: document.querySelector("#syncStatus"),
+  soundToggle: document.querySelector("#soundToggle"),
+  soundIcon: document.querySelector("#soundIcon"),
+  playTune: document.querySelector("#playTune"),
+  miniKeys: document.querySelector("#miniKeys"),
+  questMessage: document.querySelector("#questMessage"),
+  dailyQuest: document.querySelector("#dailyQuest"),
+  funStage: document.querySelector(".fun-stage"),
   timerToggle: document.querySelector("#timerToggle"),
   timerIcon: document.querySelector("#timerIcon"),
   timerDisplay: document.querySelector("#timerDisplay"),
@@ -104,6 +114,14 @@ function loadSyncConfig() {
 
 function saveSyncConfig() {
   localStorage.setItem(syncConfigKey, JSON.stringify(syncConfig));
+}
+
+function loadSoundSetting() {
+  return localStorage.getItem(soundConfigKey) !== "off";
+}
+
+function saveSoundSetting() {
+  localStorage.setItem(soundConfigKey, soundOn ? "on" : "off");
 }
 
 function normalizeSessions(sessions) {
@@ -221,6 +239,7 @@ function renderSelectedPiece() {
   els.pieceLevel.textContent = `${stars} star${stars === 1 ? "" : "s"}`;
   els.masteryText.textContent = `${mastery}%`;
   els.masteryBar.style.width = `${mastery}%`;
+  els.questMessage.textContent = getQuestMessage(piece.title, mastery);
 }
 
 function renderStats() {
@@ -234,6 +253,7 @@ function renderStats() {
   els.streakDays.textContent = `${getStreak(state.sessions)} day${getStreak(state.sessions) === 1 ? "" : "s"}`;
   els.sessionCount.textContent = state.sessions.length;
   els.bestPiece.textContent = best && best.mastery > 0 ? best.title : "Start playing";
+  els.dailyQuest.textContent = getDailyQuest();
 }
 
 function renderBadges() {
@@ -275,6 +295,7 @@ function render() {
   renderBadges();
   renderHistory();
   renderSyncStatus();
+  renderSoundState();
 }
 
 function escapeHtml(value) {
@@ -306,6 +327,8 @@ els.practiceForm.addEventListener("submit", (event) => {
   render();
   const piece = pieces.find((item) => item.id === session.pieceId);
   els.rewardBox.textContent = `${piece.title}: ${session.score} points saved. ${session.mistakes <= 2 ? "Careful playing bonus earned." : "Try for fewer mistakes next run."}`;
+  playRewardSound(session);
+  celebrate(session.score);
   syncToGithub("Practice saved. Syncing to GitHub...");
 });
 
@@ -314,6 +337,7 @@ els.clearPiece.addEventListener("click", () => {
   saveState();
   render();
   els.rewardBox.textContent = "This piece history was cleared.";
+  playTone(196, 0.16, "triangle", 0.06);
 });
 
 els.resetAll.addEventListener("click", () => {
@@ -333,6 +357,7 @@ function resetAll() {
   saveState();
   render();
   els.rewardBox.textContent = "Progress reset on this device.";
+  playTone(174.61, 0.18, "sine", 0.06);
 }
 
 els.connectSync.addEventListener("click", () => {
@@ -359,8 +384,115 @@ els.disconnectSync.addEventListener("click", () => {
 });
 
 els.syncNow.addEventListener("click", () => {
+  playTone(329.63, 0.12, "sine", 0.05);
   syncToGithub("Syncing with GitHub...");
 });
+
+els.soundToggle.addEventListener("click", () => {
+  soundOn = !soundOn;
+  saveSoundSetting();
+  renderSoundState();
+  if (soundOn) playMelody([261.63, 329.63, 392, 523.25], 0.08);
+});
+
+els.playTune.addEventListener("click", () => {
+  playMelody([261.63, 293.66, 329.63, 392, 329.63, 523.25], 0.12);
+  pulseStage();
+});
+
+els.miniKeys.addEventListener("click", (event) => {
+  const key = event.target.closest("[data-note]");
+  if (!key) return;
+  key.classList.add("active-key");
+  setTimeout(() => key.classList.remove("active-key"), 160);
+  playTone(Number(key.dataset.note), 0.2, "sine", 0.09);
+});
+
+function renderSoundState() {
+  els.soundToggle.classList.toggle("sound-on", soundOn);
+  els.soundToggle.classList.toggle("sound-off", !soundOn);
+  els.soundToggle.setAttribute("aria-label", soundOn ? "Turn sound off" : "Turn sound on");
+  els.soundToggle.setAttribute("title", soundOn ? "Turn sound off" : "Turn sound on");
+  els.soundIcon.innerHTML = soundOn
+    ? `<path d="M4 10v4h4l5 5V5l-5 5H4zM17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11" />`
+    : `<path d="M4 10v4h4l5 5V5l-5 5H4zM18 9l4 4M22 9l-4 4" />`;
+}
+
+function getQuestMessage(title, mastery) {
+  if (mastery >= 80) return `${title} is nearly stage ready`;
+  if (mastery >= 50) return `${title} is growing stronger`;
+  if (mastery >= 20) return `${title} has a bright start`;
+  return `Begin the ${title} quest`;
+}
+
+function getDailyQuest() {
+  const today = toDateKey(new Date());
+  const todaySessions = state.sessions.filter((session) => toDateKey(new Date(session.date)) === today);
+  const todayMinutes = todaySessions.reduce((sum, session) => sum + session.minutes, 0);
+  const todayCleanRuns = todaySessions.filter((session) => session.mistakes <= 2).length;
+
+  if (todayCleanRuns >= 1) return "Daily quest complete: careful ears unlocked.";
+  if (todayMinutes >= 10) return "Daily quest complete: 10 minute practice.";
+  if (todayMinutes > 0) return `${10 - todayMinutes} more minutes to finish today's quest.`;
+  return "Play any piece for 10 minutes.";
+}
+
+function getAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioContext.state === "suspended") audioContext.resume();
+  return audioContext;
+}
+
+function playTone(frequency, duration = 0.15, type = "sine", volume = 0.08, delay = 0) {
+  if (!soundOn || (!window.AudioContext && !window.webkitAudioContext)) return;
+  const context = getAudioContext();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const start = context.currentTime + delay;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  oscillator.type = type;
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+function playMelody(notes, step = 0.11) {
+  notes.forEach((note, index) => playTone(note, step * 0.9, "sine", 0.07, index * step));
+}
+
+function playRewardSound(session) {
+  const tune = session.mistakes <= 2
+    ? [523.25, 659.25, 783.99, 1046.5]
+    : [329.63, 392, 493.88];
+  playMelody(tune, 0.12);
+}
+
+function celebrate(score) {
+  pulseStage();
+  const colors = ["#ff4f9a", "#ffd84d", "#28c7b7", "#4e80ff", "#5ac85a"];
+  const count = Math.min(28, Math.max(12, Math.round(score / 5)));
+  for (let index = 0; index < count; index += 1) {
+    const spark = document.createElement("span");
+    spark.className = "spark";
+    spark.style.left = `${15 + Math.random() * 70}vw`;
+    spark.style.top = `${65 + Math.random() * 22}vh`;
+    spark.style.background = colors[index % colors.length];
+    document.body.appendChild(spark);
+    setTimeout(() => spark.remove(), 950);
+  }
+}
+
+function pulseStage() {
+  els.funStage.classList.remove("celebrate");
+  void els.funStage.offsetWidth;
+  els.funStage.classList.add("celebrate");
+}
 
 function connectGithub(token) {
   if (!token) {
@@ -503,8 +635,10 @@ els.timerMinutes.addEventListener("input", () => {
 els.timerToggle.addEventListener("click", () => {
   if (timer.running) {
     stopTimer();
+    playTone(220, 0.12, "triangle", 0.05);
     return;
   }
+  playMelody([261.63, 392], 0.1);
   timer.running = true;
   els.timerToggle.setAttribute("title", "Pause timer");
   els.timerToggle.setAttribute("aria-label", "Pause timer");
@@ -515,6 +649,8 @@ els.timerToggle.addEventListener("click", () => {
       timer.remaining = 0;
       stopTimer();
       els.rewardBox.textContent = "Timer finished. Save your practice run to collect points.";
+      playMelody([392, 493.88, 587.33, 783.99], 0.16);
+      celebrate(80);
     }
     renderTimer();
   }, 1000);

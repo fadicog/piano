@@ -1,4 +1,4 @@
-const cacheName = "piano-quest-v1";
+const cacheName = "piano-quest-v3";
 const assets = [
   "./",
   "./index.html",

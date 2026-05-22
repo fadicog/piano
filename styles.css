@@ -141,6 +141,7 @@ button {
 .practice-card,
 .sync-panel,
 .timer-panel,
+.quest-panel,
 .badges-panel,
 .history-panel {
   background: rgba(255, 255, 255, 0.92);
@@ -294,6 +295,129 @@ h2 {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--green), var(--yellow), var(--pink));
   transition: width 300ms ease;
+}
+
+.fun-stage {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 20px;
+  padding: 18px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 216, 77, 0.92), rgba(255, 255, 255, 0.92) 42%, rgba(40, 199, 183, 0.32)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.55) 0 22px, transparent 22px 44px);
+  border: 3px solid #fff;
+}
+
+.fun-stage.celebrate {
+  animation: stage-pop 700ms ease;
+}
+
+.stage-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.stage-top h2 {
+  max-width: 520px;
+  font-size: clamp(1.45rem, 2.4vw, 2.4rem);
+}
+
+.sound-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sound-on {
+  color: white;
+  background: var(--pink);
+}
+
+.sound-off {
+  color: var(--muted);
+  background: #eef2f8;
+}
+
+.tune-button {
+  min-height: 46px;
+  color: white;
+  background: var(--blue);
+}
+
+.stage-lights {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+  height: 76px;
+  align-items: end;
+}
+
+.stage-lights span {
+  min-height: 28px;
+  border-radius: 999px 999px 14px 14px;
+  background: var(--pink);
+  box-shadow: 0 10px 0 rgba(255, 255, 255, 0.45) inset;
+  animation: dance 1200ms ease-in-out infinite;
+}
+
+.stage-lights span:nth-child(2) {
+  background: var(--blue);
+  animation-delay: 120ms;
+}
+
+.stage-lights span:nth-child(3) {
+  background: var(--teal);
+  animation-delay: 240ms;
+}
+
+.stage-lights span:nth-child(4) {
+  background: var(--yellow);
+  animation-delay: 360ms;
+}
+
+.stage-lights span:nth-child(5) {
+  background: var(--green);
+  animation-delay: 480ms;
+}
+
+.mini-keys {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mini-keys button {
+  min-height: 58px;
+  border: 0;
+  border-radius: 0 0 14px 14px;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: inset 0 -8px 0 #dfe6f2, 0 8px 14px rgba(52, 65, 120, 0.12);
+  font-weight: 900;
+}
+
+.mini-keys button:active,
+.mini-keys button.active-key {
+  transform: translateY(4px);
+  box-shadow: inset 0 -3px 0 #dfe6f2, 0 4px 8px rgba(52, 65, 120, 0.12);
+}
+
+.spark {
+  position: fixed;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkle 900ms ease-out forwards;
 }
 
 .practice-form {
@@ -494,6 +618,30 @@ input[type="range"] {
   flex-wrap: wrap;
 }
 
+.daily-quest {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #fff8d6;
+  border: 2px solid #ffe985;
+  color: #4b4464;
+  font-weight: 900;
+}
+
+.quest-stars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.quest-stars span {
+  display: block;
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--yellow), var(--pink));
+}
+
 dialog {
   width: min(420px, calc(100% - 32px));
   border: 0;
@@ -566,5 +714,46 @@ dialog p {
 
   .piece-banner {
     display: grid;
+  }
+
+  .stage-top,
+  .sound-controls {
+    justify-content: stretch;
+  }
+
+  .sound-controls {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+  }
+}
+
+@keyframes dance {
+  0%,
+  100% {
+    height: 30px;
+  }
+  50% {
+    height: 76px;
+  }
+}
+
+@keyframes stage-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.015);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110px) scale(0.2);
   }
 }
