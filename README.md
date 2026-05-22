@@ -1,6 +1,6 @@
-# Piano Quest
+# Lilyan's Piano Roundup
 
-A tablet-friendly piano practice game for MTB Level 3 pieces:
+A tablet-friendly cowgirl-themed piano practice game for Lilyan's MTB Level 3 pieces:
 
 - Innocence
 - Game of Patience

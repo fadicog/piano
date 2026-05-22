@@ -1,13 +1,13 @@
 {
-  "name": "Piano Quest",
-  "short_name": "Piano Quest",
-  "description": "A colorful MTB Level 3 piano practice game with progress tracking.",
+  "name": "Lilyan's Piano Roundup",
+  "short_name": "Piano Roundup",
+  "description": "Lilyan's colorful MTB Level 3 piano practice game with progress tracking.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",
   "background_color": "#fff7c7",
-  "theme_color": "#ff4f9a",
+  "theme_color": "#e53935",
   "icons": [
     {
       "src": "icon.svg",

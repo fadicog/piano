@@ -1,17 +1,17 @@
 const pieces = [
-  { id: "innocence", title: "Innocence", label: "1", color: "#ff4f9a" },
-  { id: "game-of-patience", title: "Game of Patience", label: "2", color: "#4e80ff" },
+  { id: "innocence", title: "Innocence", label: "1", color: "#e53935" },
+  { id: "game-of-patience", title: "Game of Patience", label: "2", color: "#ffd84d" },
   { id: "rondo", title: "Rondo", label: "3", color: "#28c7b7" },
-  { id: "romance", title: "Romance", label: "4", color: "#ff8b3d" },
+  { id: "romance", title: "Romance", label: "4", color: "#8b5cf6" },
 ];
 
 const badgeRules = [
-  { id: "first", name: "First Save", detail: "Log 1 session", test: (state) => state.sessions.length >= 1 },
-  { id: "ten", name: "Ten Runs", detail: "Log 10 sessions", test: (state) => state.sessions.length >= 10 },
-  { id: "careful", name: "Careful Ears", detail: "Make 2 or fewer mistakes", test: (state) => state.sessions.some((s) => s.mistakes <= 2) },
-  { id: "all", name: "All Pieces", detail: "Practice every piece", test: (state) => pieces.every((p) => pieceSessions(state, p.id).length > 0) },
-  { id: "streak", name: "Three Day Streak", detail: "Practice 3 days", test: (state) => getStreak(state.sessions) >= 3 },
-  { id: "master", name: "Exam Ready", detail: "Reach 80% on a piece", test: (state) => pieces.some((p) => masteryForPiece(state, p.id) >= 80) },
+  { id: "first", name: "First Sheriff Star", detail: "Log 1 session", test: (state) => state.sessions.length >= 1 },
+  { id: "ten", name: "Roundup Rider", detail: "Log 10 sessions", test: (state) => state.sessions.length >= 10 },
+  { id: "careful", name: "Lasso Listener", detail: "Make 2 or fewer mistakes", test: (state) => state.sessions.some((s) => s.mistakes <= 2) },
+  { id: "all", name: "Four Piece Trail", detail: "Practice every piece", test: (state) => pieces.every((p) => pieceSessions(state, p.id).length > 0) },
+  { id: "streak", name: "Three Day Trail", detail: "Practice 3 days", test: (state) => getStreak(state.sessions) >= 3 },
+  { id: "master", name: "Stage Ready Lilyan", detail: "Reach 80% on a piece", test: (state) => pieces.some((p) => masteryForPiece(state, p.id) >= 80) },
 ];
 
 const initialState = {
@@ -158,11 +158,11 @@ function getTotalScore() {
 }
 
 function getRank(score) {
-  if (score >= 3000) return "Concert Star";
-  if (score >= 1800) return "Melody Maker";
-  if (score >= 900) return "Rhythm Ranger";
-  if (score >= 350) return "Bright Beginner";
-  return "First Note";
+  if (score >= 3000) return "Piano Sheriff";
+  if (score >= 1800) return "Trail Boss";
+  if (score >= 900) return "Melody Rider";
+  if (score >= 350) return "Bright Cowgirl";
+  return "First Star";
 }
 
 function getStreak(sessions) {
@@ -214,7 +214,7 @@ function renderPieces() {
           <span class="piece-icon" style="background:${piece.color}">${piece.label}</span>
           <span>
             <span class="piece-name">${piece.title}</span>
-            <span class="piece-meta">${mastery}% mastery - ${sessions.length} runs</span>
+            <span class="piece-meta">${mastery}% mastery - ${sessions.length} roundups</span>
           </span>
         </button>
       `;
@@ -236,7 +236,7 @@ function renderSelectedPiece() {
   const stars = Math.min(5, Math.floor(mastery / 20));
   els.selectedComposer.textContent = `MTB Level 3 - Piece ${piece.label}`;
   els.selectedTitle.textContent = piece.title;
-  els.pieceLevel.textContent = `${stars} star${stars === 1 ? "" : "s"}`;
+  els.pieceLevel.textContent = `${stars} sheriff star${stars === 1 ? "" : "s"}`;
   els.masteryText.textContent = `${mastery}%`;
   els.masteryBar.style.width = `${mastery}%`;
   els.questMessage.textContent = getQuestMessage(piece.title, mastery);
@@ -252,7 +252,7 @@ function renderStats() {
   els.heroRank.textContent = getRank(score);
   els.streakDays.textContent = `${getStreak(state.sessions)} day${getStreak(state.sessions) === 1 ? "" : "s"}`;
   els.sessionCount.textContent = state.sessions.length;
-  els.bestPiece.textContent = best && best.mastery > 0 ? best.title : "Start playing";
+  els.bestPiece.textContent = best && best.mastery > 0 ? best.title : "Start the trail";
   els.dailyQuest.textContent = getDailyQuest();
 }
 
@@ -273,14 +273,14 @@ function renderBadges() {
 function renderHistory() {
   const selectedSessions = pieceSessions(state, state.selectedPiece).slice(-8).reverse();
   if (!selectedSessions.length) {
-    els.history.innerHTML = `<div class="history-item"><p>No practice saved for this piece yet.</p></div>`;
+    els.history.innerHTML = `<div class="history-item"><p>No roundup saved for this piece yet.</p></div>`;
     return;
   }
 
   els.history.innerHTML = selectedSessions
     .map((session) => `
       <div class="history-item">
-        <strong><span>${session.score} pts</span><span>${formatDate(session.date)}</span></strong>
+        <strong><span>${session.score} stars</span><span>${formatDate(session.date)}</span></strong>
         <p>${session.minutes} min - ${session.mistakes} mistakes - ${session.mood}</p>
         ${session.note ? `<p>${escapeHtml(session.note)}</p>` : ""}
       </div>
@@ -326,7 +326,7 @@ els.practiceForm.addEventListener("submit", (event) => {
   saveState();
   render();
   const piece = pieces.find((item) => item.id === session.pieceId);
-  els.rewardBox.textContent = `${piece.title}: ${session.score} points saved. ${session.mistakes <= 2 ? "Careful playing bonus earned." : "Try for fewer mistakes next run."}`;
+  els.rewardBox.textContent = `${piece.title}: Lilyan earned ${session.score} sheriff stars. ${session.mistakes <= 2 ? "Lasso Listener bonus earned." : "Try to round up more tricky notes next time."}`;
   playRewardSound(session);
   celebrate(session.score);
   syncToGithub("Practice saved. Syncing to GitHub...");
@@ -336,7 +336,7 @@ els.clearPiece.addEventListener("click", () => {
   state.sessions = state.sessions.filter((session) => session.pieceId !== state.selectedPiece);
   saveState();
   render();
-  els.rewardBox.textContent = "This piece history was cleared.";
+  els.rewardBox.textContent = "This piece roundup history was cleared.";
   playTone(196, 0.16, "triangle", 0.06);
 });
 
@@ -356,7 +356,7 @@ function resetAll() {
   state = cloneInitialState();
   saveState();
   render();
-  els.rewardBox.textContent = "Progress reset on this device.";
+  els.rewardBox.textContent = "Lilyan's roundup progress was reset on this device.";
   playTone(174.61, 0.18, "sine", 0.06);
 }
 
@@ -419,10 +419,10 @@ function renderSoundState() {
 }
 
 function getQuestMessage(title, mastery) {
-  if (mastery >= 80) return `${title} is nearly stage ready`;
-  if (mastery >= 50) return `${title} is growing stronger`;
-  if (mastery >= 20) return `${title} has a bright start`;
-  return `Begin the ${title} quest`;
+  if (mastery >= 80) return `Lilyan has ${title} nearly stage ready`;
+  if (mastery >= 50) return `${title} is trotting along nicely`;
+  if (mastery >= 20) return `${title} has a bright cowgirl start`;
+  return `Begin Lilyan's ${title} trail`;
 }
 
 function getDailyQuest() {
@@ -431,9 +431,9 @@ function getDailyQuest() {
   const todayMinutes = todaySessions.reduce((sum, session) => sum + session.minutes, 0);
   const todayCleanRuns = todaySessions.filter((session) => session.mistakes <= 2).length;
 
-  if (todayCleanRuns >= 1) return "Daily quest complete: careful ears unlocked.";
-  if (todayMinutes >= 10) return "Daily quest complete: 10 minute practice.";
-  if (todayMinutes > 0) return `${10 - todayMinutes} more minutes to finish today's quest.`;
+  if (todayCleanRuns >= 1) return "Daily roundup complete: lasso listener unlocked.";
+  if (todayMinutes >= 10) return "Daily roundup complete: 10 minute trail ride.";
+  if (todayMinutes > 0) return `${10 - todayMinutes} more minutes to finish today's roundup.`;
   return "Play any piece for 10 minutes.";
 }
 

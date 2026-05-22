@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Piano Quest</title>
-    <meta name="theme-color" content="#ff4f9a" />
+    <title>Lilyan's Piano Roundup</title>
+    <meta name="theme-color" content="#e53935" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
@@ -14,11 +14,11 @@
       <section class="hero">
         <div>
           <p class="eyebrow">MTB Level 3 Practice</p>
-          <h1>Piano Quest</h1>
-          <p class="subtitle">Play each piece, log mistakes, earn stars, and unlock practice badges.</p>
+          <h1>Lilyan's Piano Roundup</h1>
+          <p class="subtitle">Saddle up, play each piece, collect sheriff stars, and round up tricky notes.</p>
         </div>
         <div class="hero-score">
-          <span class="score-label">Total Score</span>
+          <span class="score-label">Roundup Score</span>
           <strong id="totalScore">0</strong>
           <span id="heroRank">First Note</span>
         </div>
@@ -71,11 +71,11 @@
             </div>
           </div>
 
-          <div class="fun-stage" aria-label="Practice celebration stage">
+          <div class="fun-stage" aria-label="Lilyan's cowgirl celebration stage">
             <div class="stage-top">
               <div>
-                <p class="eyebrow">Star Stage</p>
-                <h2 id="questMessage">Warm up your magic fingers</h2>
+                <p class="eyebrow">Cowgirl Star Stage</p>
+                <h2 id="questMessage">Warm up your roundup fingers</h2>
               </div>
               <div class="sound-controls">
                 <button id="soundToggle" class="icon-button sound-on" type="button" title="Toggle sound" aria-label="Toggle sound">
@@ -150,7 +150,7 @@
           </form>
 
           <div class="reward-box" id="rewardBox" aria-live="polite">
-            Choose a piece, play it, then save the result to earn points.
+            Choose a piece, play it, then save the result to earn sheriff stars.
           </div>
         </section>
 
@@ -185,7 +185,7 @@
           </article>
 
           <article class="quest-panel">
-            <h2>Daily Quest</h2>
+            <h2>Daily Roundup</h2>
             <div id="dailyQuest" class="daily-quest">Play any piece for 10 minutes.</div>
             <div class="quest-stars" aria-hidden="true">
               <span></span>
