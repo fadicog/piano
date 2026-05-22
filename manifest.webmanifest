@@ -1,0 +1,19 @@
+{
+  "name": "Piano Quest",
+  "short_name": "Piano Quest",
+  "description": "A colorful MTB Level 3 piano practice game with progress tracking.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#fff7c7",
+  "theme_color": "#ff4f9a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

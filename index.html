@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piano Quest</title>
+    <meta name="theme-color" content="#ff4f9a" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">MTB Level 3 Practice</p>
+          <h1>Piano Quest</h1>
+          <p class="subtitle">Play each piece, log mistakes, earn stars, and unlock practice badges.</p>
+        </div>
+        <div class="hero-score">
+          <span class="score-label">Total Score</span>
+          <strong id="totalScore">0</strong>
+          <span id="heroRank">First Note</span>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-label="Practice dashboard">
+        <article class="stat-panel">
+          <span>Practice Streak</span>
+          <strong id="streakDays">0 days</strong>
+        </article>
+        <article class="stat-panel">
+          <span>Sessions</span>
+          <strong id="sessionCount">0</strong>
+        </article>
+        <article class="stat-panel">
+          <span>Best Piece</span>
+          <strong id="bestPiece">Start playing</strong>
+        </article>
+      </section>
+
+      <section class="quest-layout">
+        <aside class="piece-list" aria-label="Pieces">
+          <div class="section-heading">
+            <h2>Pieces</h2>
+            <button id="resetAll" class="icon-button danger" type="button" title="Reset all progress" aria-label="Reset all progress">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14" />
+              </svg>
+            </button>
+          </div>
+          <div id="pieces" class="pieces"></div>
+        </aside>
+
+        <section class="practice-card" aria-label="Practice logger">
+          <div class="piece-banner">
+            <div>
+              <p class="eyebrow" id="selectedComposer">Piece 1</p>
+              <h2 id="selectedTitle">Innocence</h2>
+            </div>
+            <div class="piece-level" id="pieceLevel">0 stars</div>
+          </div>
+
+          <div class="goal-track">
+            <div class="track-label">
+              <span>Mastery</span>
+              <strong id="masteryText">0%</strong>
+            </div>
+            <div class="progress-bar" aria-hidden="true">
+              <span id="masteryBar"></span>
+            </div>
+          </div>
+
+          <form id="practiceForm" class="practice-form">
+            <div class="form-grid">
+              <label>
+                <span>Performance</span>
+                <select id="performance">
+                  <option value="5">Sparkly concert</option>
+                  <option value="4">Very confident</option>
+                  <option value="3" selected>Good practice</option>
+                  <option value="2">A bit wobbly</option>
+                  <option value="1">Needs help</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Mistakes</span>
+                <input id="mistakes" type="number" min="0" max="40" value="3" inputmode="numeric" />
+              </label>
+
+              <label>
+                <span>Minutes</span>
+                <input id="minutes" type="number" min="1" max="60" value="10" inputmode="numeric" />
+              </label>
+
+              <label>
+                <span>Mood</span>
+                <select id="mood">
+                  <option>Happy</option>
+                  <option>Focused</option>
+                  <option>Sleepy</option>
+                  <option>Brave</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="wide-label">
+              <span>Practice note</span>
+              <input id="note" type="text" maxlength="80" placeholder="Example: left hand was smoother today" />
+            </label>
+
+            <button class="primary-action" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2 7.5 14 3 9.6l6.2-.9L12 3z" />
+              </svg>
+              Save Practice
+            </button>
+          </form>
+
+          <div class="reward-box" id="rewardBox" aria-live="polite">
+            Choose a piece, play it, then save the result to earn points.
+          </div>
+        </section>
+
+        <section class="right-rail" aria-label="Rewards and history">
+          <article class="sync-panel">
+            <div class="section-heading">
+              <h2>Cloud Sync</h2>
+              <button id="syncNow" class="icon-button" type="button" title="Sync now" aria-label="Sync now">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8M18 3v5h-5M6 21v-5h5" />
+                </svg>
+              </button>
+            </div>
+            <p id="syncStatus" class="sync-status">Not connected</p>
+            <div class="sync-actions">
+              <button id="connectSync" class="text-button" type="button">Connect GitHub</button>
+              <button id="disconnectSync" class="text-button muted-button" type="button">Disconnect</button>
+            </div>
+          </article>
+
+          <article class="timer-panel">
+            <div class="section-heading">
+              <h2>Practice Timer</h2>
+              <button id="timerToggle" class="icon-button" type="button" title="Start timer" aria-label="Start timer">
+                <svg id="timerIcon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+            </div>
+            <div id="timerDisplay" class="timer-display">10:00</div>
+            <input id="timerMinutes" type="range" min="3" max="30" value="10" />
+          </article>
+
+          <article class="badges-panel">
+            <h2>Badges</h2>
+            <div id="badges" class="badges"></div>
+          </article>
+
+          <article class="history-panel">
+            <div class="section-heading">
+              <h2>Recent Runs</h2>
+              <button id="clearPiece" class="text-button" type="button">Clear piece</button>
+            </div>
+            <div id="history" class="history"></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="confirmDialog">
+      <form method="dialog">
+        <h2>Reset all progress?</h2>
+        <p>This clears scores, sessions, badges, and history on this device.</p>
+        <div class="dialog-actions">
+          <button value="cancel" class="text-button" type="submit">Cancel</button>
+          <button value="reset" class="danger-button" type="submit">Reset</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="syncDialog">
+      <form id="syncForm" method="dialog">
+        <h2>Connect GitHub Sync</h2>
+        <p>Use a fine-grained GitHub token with Contents read/write access to this repository. The token stays in this browser.</p>
+        <label>
+          <span>GitHub token</span>
+          <input id="githubToken" type="password" autocomplete="off" placeholder="github_pat_..." />
+        </label>
+        <div class="dialog-actions">
+          <button value="cancel" class="text-button" type="submit">Cancel</button>
+          <button value="connect" class="danger-button sync-connect-button" type="submit">Connect</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
