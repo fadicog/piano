@@ -1,4 +1,4 @@
-const cacheName = "piano-quest-v4";
+const cacheName = "piano-quest-v5";
 const assets = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const assets = [
   "./app.js",
   "./manifest.webmanifest",
   "./icon.svg",
+  "./jess.jpg",
 ];
 
 self.addEventListener("install", (event) => {
